@@ -60,7 +60,7 @@ def transform_bronze_to_silver():
         save_to_silver(df_clean, table)
         data[table] = df_clean
 
-    # --- 2. TABLAS ENRIQUECIDAS (TU TURNO, LOCO) ---
+    # --- 2. TABLAS ENRIQUECIDAS ---
     
     print("\n>>> Generando tablas enriquecidas...")
     
@@ -78,6 +78,11 @@ def transform_bronze_to_silver():
     customers_enriched = create_customers_enriched(data['customers'], data['locations'])
     if not customers_enriched.empty:
         save_to_silver(customers_enriched, "customers_enriched")
+
+    #4. Inventory Enriched
+    inventory_enriched = create_inventory_enriched(data['inventory'], data['perfumes'], data['brands'])
+    if not inventory_enriched.empty:
+        save_to_silver(inventory_enriched, "inventory_enriched")
 
 # --- ESPACIO PARA TUS FUNCIONES DE JOIN ---
 
@@ -150,6 +155,27 @@ def create_customers_enriched(customers_df, locations_df):
 
     final_cols=['first_name', 'last_name', 'email', 'country', 'state']
     return enriched[final_cols]
+
+def create_inventory_enriched(inventory_df, perfumes_df, brands_df):
+    """
+    Une inventario con perfumes y marcas para tener la vista completa.
+    """
+    if inventory_df.empty or perfumes_df.empty or brands_df.empty:
+        return pd.DataFrame()
+
+    # 1. Unimos inventario con perfumes
+    df = pd.merge(inventory_df, perfumes_df, left_on='perfume_id', right_on='id')
+    
+    # 2. Unimos con marcas
+    df = pd.merge(df, brands_df, left_on='brand_id', right_on='id', suffixes=('', '_brand'))
+
+    # 3. Seleccionamos columnas finales (usando los nombres que deja el merge)
+    final_cols = ['name_brand', 'name', 'size_ml', 'current_stock']
+    
+    # Filtramos solo las que existen para evitar errores
+    existing_cols = [c for c in final_cols if c in df.columns]
+    
+    return df[existing_cols].rename(columns={'name_brand': 'brand', 'name': 'perfume'})
 
 if __name__ == "__main__":
     transform_bronze_to_silver()

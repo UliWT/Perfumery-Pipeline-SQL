@@ -11,4 +11,4 @@ RAW_SCHEMA = "raw"
 ANALYTICS_SCHEMA = "analytics"
 
 # Tables to process
-TABLES = ["brands", "perfumes", "customers", "locations", "sales"]
+TABLES = ["brands", "perfumes", "customers", "locations", "sales","inventory"]

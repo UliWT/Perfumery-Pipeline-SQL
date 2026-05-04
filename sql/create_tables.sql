@@ -36,3 +36,10 @@ CREATE TABLE raw.sales (
     quantity INT DEFAULT 1,
     sale_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE raw.inventory (
+    id SERIAL PRIMARY KEY,
+    perfume_id INT REFERENCES raw.perfumes(id),
+    current_stock INT NOT NULL,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
