@@ -4,178 +4,203 @@ from deltalake.writer import write_deltalake
 import os
 import sys
 
-# Configuración de rutas
+# Path and import configuration
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from src.config import BRONZE_PATH, SILVER_PATH, TABLES
+from src.config import BRONZE_PATH, SILVER_PATH, TABLES, ENRICHED_TABLES, logger
 
 def read_from_bronze(table_name):
-    """Lee una tabla de la capa Bronze."""
+    """Reads a table from the Bronze layer."""
     path = os.path.join(BRONZE_PATH, table_name)
     try:
         return DeltaTable(path).to_pandas()
     except Exception as e:
-        print(f"[!] Error leyendo {table_name} de Bronze: {e}")
+        logger.error(f"Error reading {table_name} from Bronze: {e}")
         return pd.DataFrame()
 
 def save_to_silver(df, table_name):
-    """Guarda un DataFrame en la capa Silver."""
-    path = os.path.join(SILVER_PATH, table_name)
-    write_deltalake(path, df, mode='overwrite')
-    print(f"[OK] Tabla '{table_name}' guardada en Silver.")
+    """Persists a DataFrame to the Silver layer."""
+    try:
+        path = os.path.join(SILVER_PATH, table_name)
+        write_deltalake(path, df, mode='overwrite', schema_mode='overwrite')
+        logger.info(f"Table '{table_name}' successfully persisted in Silver.")
+    except Exception as e:
+        logger.error(f"Error saving {table_name} to Silver: {e}")
 
-def basic_cleaning(df):
+def basic_cleaning(df, table_name):
     """
-    Limpieza base:
-    1. Elimina duplicados.
-    2. Elimina filas con nulos.
-    3. Resetea el índice empezando desde 1.
+    Base technical cleaning:
+    1. Removes duplicates.
+    2. Trims whitespace from strings.
+    3. Resets the index.
     """
     if df.empty:
         return df
     
-    # 1. Redundancias (duplicados)
+    initial_rows = len(df)
+    
+    # 1. Remove exact duplicates
     df = df.drop_duplicates().reset_index(drop=True)
     
-    # 2. Datos nulos (limpieza agresiva por ahora)
-    df = df.dropna()
+    # 2. Trim whitespace in text columns
+    str_cols = df.select_dtypes(include=['object']).columns
+    for col in str_cols:
+        df[col] = df[col].astype(str).str.strip()
     
-    # 3. Index a partir de 1
-    df.index = df.index + 1
+    # 3. Duplicate reporting
+    diff = initial_rows - len(df)
+    if diff > 0:
+        logger.warning(f"[{table_name}] Removed {diff} duplicate rows.")
     
     return df
 
+def apply_business_rules(df, table_name):
+    """
+    Applies entity-specific business rules.
+    Filters records that do not meet minimum quality criteria.
+    """
+    if df.empty:
+        return df
+
+    initial_count = len(df)
+
+    if table_name == "perfumes":
+        # Rule: Price must be positive and name must not be null
+        df = df[df['price'] > 0]
+        df = df[df['name'].notna() & (df['name'] != 'None')]
+
+    elif table_name == "sales":
+        # Rule: Quantity must be greater than 0
+        df = df[df['quantity'] > 0]
+        # Validate that critical IDs exist
+        df = df.dropna(subset=['customer_id', 'perfume_id', 'location_id'])
+
+    elif table_name == "customers":
+        # Rule: Email must have a valid basic format
+        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        df = df[df['email'].str.contains(email_regex, na=False, regex=True)]
+
+    elif table_name == "inventory":
+        # Rule: Stock cannot be negative
+        df = df[df['current_stock'] >= 0]
+
+    dropped = initial_count - len(df)
+    if dropped > 0:
+        logger.warning(f"[{table_name}] Business Rules: Discarded {dropped} rows due to inconsistencies.")
+    
+    return df.reset_index(drop=True)
+
 def transform_bronze_to_silver():
-    """Orquestador de la capa Silver."""
+    """
+    Silver layer orchestrator: Bronze -> Cleaning -> Business Rules -> Enrichment -> Silver.
+    
+    TODO: Transition to incremental processing. Instead of a full overwrite,
+    only process records added to Bronze since the last run. This will involve 
+    using Delta Lake MERGE operations for base tables and CDC-like logic for enrichments.
+    """
+    logger.info("Starting Bronze -> Silver Transformation...")
+    
     if not os.path.exists(SILVER_PATH):
         os.makedirs(SILVER_PATH)
 
-    # --- 1. PROCESAMIENTO DE TABLAS BASE ---
     data = {}
+    
+    # --- 1. BASE TABLE PROCESSING ---
     for table in TABLES:
-        print(f"-> Procesando base: {table}")
-        df_raw = read_from_bronze(table)
-        df_clean = basic_cleaning(df_raw)
+        logger.info(f"Processing base table: {table}")
         
-        # Guardamos la versión limpia básica
-        save_to_silver(df_clean, table)
-        data[table] = df_clean
+        df_raw = read_from_bronze(table)
+        if df_raw.empty:
+            logger.warning(f"Table {table} empty in Bronze. Skipping...")
+            data[table] = df_raw
+            continue
+            
+        # Technical cleaning and business rules
+        df_clean = basic_cleaning(df_raw, table)
+        df_final = apply_business_rules(df_clean, table)
+        
+        # Save the clean base version
+        save_to_silver(df_final, table)
+        data[table] = df_final
 
-    # --- 2. TABLAS ENRIQUECIDAS ---
+    # --- 2. ENRICHED TABLE GENERATION ---
+    logger.info("Generating enriched tables (Joins)...")
     
-    print("\n>>> Generando tablas enriquecidas...")
-    
-    # 1. Perfumes Enriched
-    perfumes_enriched = create_perfumes_enriched(data['perfumes'], data['brands'])
-    if not perfumes_enriched.empty:
-        save_to_silver(perfumes_enriched, "perfumes_enriched")
-    
-    # 2. Sales Enriched
-    sales_enriched = create_sales_enriched(data['sales'], data['perfumes'], data['locations'], data['customers'], data['brands'])
-    if not sales_enriched.empty:
-        save_to_silver(sales_enriched, "sales_enriched")
-    
-    # 3. Customers Enriched
-    customers_enriched = create_customers_enriched(data['customers'], data['locations'])
-    if not customers_enriched.empty:
-        save_to_silver(customers_enriched, "customers_enriched")
+    enrichment_tasks = [
+        ("perfumes_enriched", create_perfumes_enriched, ['perfumes', 'brands']),
+        ("sales_enriched", create_sales_enriched, ['sales', 'perfumes', 'locations', 'customers', 'brands']),
+        ("customers_enriched", create_customers_enriched, ['customers', 'locations']),
+        ("inventory_enriched", create_inventory_enriched, ['inventory', 'perfumes', 'brands'])
+    ]
 
-    #4. Inventory Enriched
-    inventory_enriched = create_inventory_enriched(data['inventory'], data['perfumes'], data['brands'])
-    if not inventory_enriched.empty:
-        save_to_silver(inventory_enriched, "inventory_enriched")
+    for target_table, func, dependencies in enrichment_tasks:
+        try:
+            # Verify that all dependencies have data
+            if all(not data[dep].empty for dep in dependencies):
+                args = [data[dep] for dep in dependencies]
+                df_enriched = func(*args)
+                save_to_silver(df_enriched, target_table)
+            else:
+                logger.warning(f"Skipping {target_table} due to empty dependencies.")
+        except Exception as e:
+            logger.error(f"Critical failure generating {target_table}: {e}")
 
-# --- ESPACIO PARA TUS FUNCIONES DE JOIN ---
+    logger.info("Silver layer completion successful.")
+
+# --- ENRICHMENT FUNCTIONS ---
 
 def create_perfumes_enriched(perfumes_df, brands_df):
-    """
-    Traducido de tu SQL:
-    select b.name as brand_name, p.name, p.perfume_type, p.size_ml, p.price, b.country
-    from brands b join perfumes p on b.id = p.brand_id
-    """
-    # Renombramos para evitar colisiones y que quede claro
-    brands_subset = brands_df[['id', 'name', 'country']].rename(columns={'name': 'brand_name', 'id': 'brand_id'})
-    
-    # Join
-    enriched = pd.merge(perfumes_df, brands_subset, on='brand_id', how='inner')
-    
-    # Selección de columnas según tu SQL
+    """Joins perfumes with brands."""
+    b_df = brands_df[['id', 'name', 'country']].rename(
+        columns={'id': 'brand_id', 'name': 'brand_name'}
+    )
+    enriched = pd.merge(perfumes_df, b_df, on='brand_id', how='inner')
     final_cols = ['brand_name', 'name', 'perfume_type', 'size_ml', 'price', 'country']
     return enriched[final_cols]
 
 def create_sales_enriched(sales_df, perfumes_df, locations_df, customers_df, brands_df):
-    """
-    Mega Join traducido de tu SQL:
-    select c.first_name, c.last_name, l.name, l.state, b.name, p.name, s.quantity, s.sale_date
-    """
-    # Mapeo de columnas corregido (Pandas solo agrega sufijos si hay colisión)
-    # Vamos a buscar las columnas por lo que contienen
+    """Mega Join of sales with all related dimensions."""
+    c_df = customers_df[['id', 'first_name', 'last_name']].rename(columns={'id': 'customer_id'})
+    l_df = locations_df[['id', 'name', 'state']].rename(columns={'id': 'location_id', 'name': 'location_name'})
+    p_df = perfumes_df[['id', 'name', 'brand_id', 'price']].rename(columns={'id': 'perfume_id', 'name': 'perfume_name'})
+    b_df = brands_df[['id', 'name']].rename(columns={'id': 'brand_id', 'name': 'brand_name'})
     
-    # 1. Sales + Customers
-    df = pd.merge(sales_df, customers_df, left_on='customer_id', right_on='id', suffixes=('', '_cust'))
+    df = sales_df.merge(c_df, on='customer_id', how='left')
+    df = df.merge(l_df, on='location_id', how='left')
+    df = df.merge(p_df, on='perfume_id', how='left')
+    df = df.merge(b_df, on='brand_id', how='left')
     
-    # 2. + Locations (del cliente)
-    # Si 'name' ya existe de customers, acá sí habrá colisión
-    df = pd.merge(df, locations_df, left_on='location', right_on='id', suffixes=('', '_loc'))
-    
-    # 3. + Perfumes
-    df = pd.merge(df, perfumes_df, left_on='perfume_id', right_on='id', suffixes=('', '_perf'))
-    
-    # 4. + Brands (del perfume)
-    df = pd.merge(df, brands_df, left_on='brand_id', right_on='id', suffixes=('', '_brand'))
-    
-    # Intentamos detectar los nombres reales de las columnas (pueden variar según el orden de los merges)
-    # customers_df suele traer 'first_name', 'last_name'
-    # locations_df trae 'name' -> name_loc
-    # perfumes_df trae 'name' -> name_perf
-    # brands_df trae 'name' -> name_brand
-    
-    # Mapeo flexible
-    cols_map = {}
-    if 'first_name' in df.columns: cols_map['first_name'] = 'first_name'
-    if 'last_name' in df.columns: cols_map['last_name'] = 'last_name'
-    if 'name_loc' in df.columns: cols_map['name_loc'] = 'location_name'
-    elif 'name' in df.columns: cols_map['name'] = 'location_name' # Fallback
-    
-    if 'state' in df.columns: cols_map['state'] = 'state'
-    
-    if 'name_brand' in df.columns: cols_map['name_brand'] = 'brand_name'
-    if 'name_perf' in df.columns: cols_map['name_perf'] = 'perfume_name'
-    if 'price' in df.columns: cols_map['price'] = 'price'
-    if 'quantity' in df.columns: cols_map['quantity'] = 'quantity'
-    if 'sale_date' in df.columns: cols_map['sale_date'] = 'sale_date'
-
-    return df[list(cols_map.keys())].rename(columns=cols_map)
+    final_cols = [
+        'sale_date', 'first_name', 'last_name', 'location_name', 
+        'state', 'brand_name', 'perfume_name', 'quantity', 'price'
+    ]
+    return df[final_cols]
 
 def create_customers_enriched(customers_df, locations_df):
-    locs = locations_df[['id', 'name', 'state']].rename(
-        columns={'name': 'country', 'id': 'location'}
+    """Joins customers with their location."""
+    # Handle potential inconsistency in source column names (location vs location_id)
+    if 'location' in customers_df.columns and 'location_id' not in customers_df.columns:
+        customers_df = customers_df.rename(columns={'location': 'location_id'})
+
+    l_df = locations_df[['id', 'name', 'state']].rename(
+        columns={'id': 'location_id', 'name': 'location_name'}
     )
+    
+    # Ensure compatible types for the merge
+    customers_df['location_id'] = customers_df['location_id'].astype(int)
+    l_df['location_id'] = l_df['location_id'].astype(int)
 
-    enriched = pd.merge(customers_df, locs, on='location', how='inner')
-
-    final_cols=['first_name', 'last_name', 'email', 'country', 'state']
+    enriched = pd.merge(customers_df, l_df, on='location_id', how='inner')
+    final_cols = ['first_name', 'last_name', 'email', 'location_name', 'state']
     return enriched[final_cols]
 
 def create_inventory_enriched(inventory_df, perfumes_df, brands_df):
-    """
-    Une inventario con perfumes y marcas para tener la vista completa.
-    """
-    if inventory_df.empty or perfumes_df.empty or brands_df.empty:
-        return pd.DataFrame()
-
-    # 1. Unimos inventario con perfumes
-    df = pd.merge(inventory_df, perfumes_df, left_on='perfume_id', right_on='id')
-    
-    # 2. Unimos con marcas
-    df = pd.merge(df, brands_df, left_on='brand_id', right_on='id', suffixes=('', '_brand'))
-
-    # 3. Seleccionamos columnas finales (usando los nombres que deja el merge)
-    final_cols = ['name_brand', 'name', 'size_ml', 'current_stock']
-    
-    # Filtramos solo las que existen para evitar errores
-    existing_cols = [c for c in final_cols if c in df.columns]
-    
-    return df[existing_cols].rename(columns={'name_brand': 'brand', 'name': 'perfume'})
+    """Joins inventory with perfumes and brands."""
+    p_df = perfumes_df[['id', 'name', 'brand_id']].rename(columns={'id': 'perfume_id', 'name': 'perfume_name'})
+    b_df = brands_df[['id', 'name']].rename(columns={'id': 'brand_id', 'name': 'brand_name'})
+    df = inventory_df.merge(p_df, on='perfume_id', how='left')
+    df = df.merge(b_df, on='brand_id', how='left')
+    final_cols = ['brand_name', 'perfume_name', 'current_stock']
+    return df[final_cols]
 
 if __name__ == "__main__":
     transform_bronze_to_silver()

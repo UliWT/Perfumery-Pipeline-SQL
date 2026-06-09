@@ -1,0 +1,323 @@
+2026-06-09 18:20:23,966 - INFO - >>> Iniciando Ejecución de la Pipeline Completa...
+2026-06-09 18:20:23,966 - INFO - Iniciando Ingesta Bronze desde PostgreSQL...
+2026-06-09 18:20:24,061 - INFO - Ingiriendo tabla: brands
+2026-06-09 18:20:24,223 - INFO - [brands] Ingesta EXITOSA.
+2026-06-09 18:20:24,223 - INFO - Ingiriendo tabla: perfumes
+2026-06-09 18:20:24,257 - INFO - [perfumes] Ingesta EXITOSA.
+2026-06-09 18:20:24,258 - INFO - Ingiriendo tabla: customers
+2026-06-09 18:20:24,290 - INFO - [customers] Ingesta EXITOSA.
+2026-06-09 18:20:24,291 - INFO - Ingiriendo tabla: locations
+2026-06-09 18:20:24,321 - INFO - [locations] Ingesta EXITOSA.
+2026-06-09 18:20:24,321 - INFO - Ingiriendo tabla: sales
+2026-06-09 18:20:24,349 - INFO - [sales] Ingesta EXITOSA.
+2026-06-09 18:20:24,349 - INFO - Ingiriendo tabla: inventory
+2026-06-09 18:20:24,368 - INFO - [inventory] Ingesta EXITOSA.
+2026-06-09 18:20:24,368 - INFO - Finalización exitosa de la capa Bronze.
+2026-06-09 18:20:24,368 - INFO - Iniciando Transformación Bronze -> Silver...
+2026-06-09 18:20:24,368 - INFO - Procesando tabla base: brands
+2026-06-09 18:20:24,461 - INFO - Tabla 'brands' persistida en Silver exitosamente.
+2026-06-09 18:20:24,462 - INFO - Procesando tabla base: perfumes
+2026-06-09 18:20:24,503 - INFO - Tabla 'perfumes' persistida en Silver exitosamente.
+2026-06-09 18:20:24,503 - INFO - Procesando tabla base: customers
+2026-06-09 18:20:24,541 - INFO - Tabla 'customers' persistida en Silver exitosamente.
+2026-06-09 18:20:24,541 - INFO - Procesando tabla base: locations
+2026-06-09 18:20:24,580 - INFO - Tabla 'locations' persistida en Silver exitosamente.
+2026-06-09 18:20:24,580 - INFO - Procesando tabla base: sales
+2026-06-09 18:20:24,615 - INFO - Tabla 'sales' persistida en Silver exitosamente.
+2026-06-09 18:20:24,615 - INFO - Procesando tabla base: inventory
+2026-06-09 18:20:24,623 - WARNING - [inventory] Reglas de Negocio: Se descartaron 1 filas por inconsistencias.
+2026-06-09 18:20:24,637 - INFO - Tabla 'inventory' persistida en Silver exitosamente.
+2026-06-09 18:20:24,637 - INFO - Generando tablas enriquecidas (Joins)...
+2026-06-09 18:20:24,661 - INFO - Tabla 'perfumes_enriched' persistida en Silver exitosamente.
+2026-06-09 18:20:24,693 - INFO - Tabla 'sales_enriched' persistida en Silver exitosamente.
+2026-06-09 18:20:24,694 - ERROR - Falla crítica generando customers_enriched: 'location_id'
+2026-06-09 18:20:24,709 - INFO - Tabla 'inventory_enriched' persistida en Silver exitosamente.
+2026-06-09 18:20:24,709 - INFO - Finalización exitosa de la capa Silver.
+2026-06-09 18:20:24,709 - INFO - Iniciando Agregaciones Gold (Business Layer)...
+2026-06-09 18:20:24,721 - INFO - Calculando Revenue por Marca...
+2026-06-09 18:20:24,742 - INFO - Tabla Gold 'revenue_by_brand' generada exitosamente.
+2026-06-09 18:20:24,742 - INFO - Calculando Top Perfumes...
+2026-06-09 18:20:24,759 - INFO - Tabla Gold 'top_selling_perfumes' generada exitosamente.
+2026-06-09 18:20:24,759 - INFO - Calculando Revenue por Locación...
+2026-06-09 18:20:24,773 - INFO - Tabla Gold 'revenue_by_location' generada exitosamente.
+2026-06-09 18:20:24,773 - INFO - Finalización exitosa de la capa Gold.
+2026-06-09 18:20:24,773 - INFO - Iniciando Exportación de Capa Gold a PostgreSQL (Analytics)...
+2026-06-09 18:20:24,773 - INFO - Exportando tabla Gold: revenue_by_brand
+2026-06-09 18:20:24,858 - INFO - [revenue_by_brand] Exportación EXITOSA.
+2026-06-09 18:20:24,858 - INFO - Exportando tabla Gold: revenue_by_location
+2026-06-09 18:20:24,885 - INFO - [revenue_by_location] Exportación EXITOSA.
+2026-06-09 18:20:24,885 - INFO - Exportando tabla Gold: top_selling_perfumes
+2026-06-09 18:20:24,909 - INFO - [top_selling_perfumes] Exportación EXITOSA.
+2026-06-09 18:20:24,909 - INFO - Finalización exitosa de la exportación a Analytics.
+2026-06-09 18:20:24,909 - INFO - >>> Ejecución de la Pipeline: EXITOSA
+2026-06-09 18:21:46,035 - INFO - >>> Iniciando Ejecución de la Pipeline Completa...
+2026-06-09 18:21:46,035 - INFO - Iniciando Ingesta Bronze desde PostgreSQL...
+2026-06-09 18:21:46,081 - INFO - Ingiriendo tabla: brands
+2026-06-09 18:21:46,126 - INFO - [brands] Ingesta EXITOSA.
+2026-06-09 18:21:46,126 - INFO - Ingiriendo tabla: perfumes
+2026-06-09 18:21:46,154 - INFO - [perfumes] Ingesta EXITOSA.
+2026-06-09 18:21:46,154 - INFO - Ingiriendo tabla: customers
+2026-06-09 18:21:46,178 - INFO - [customers] Ingesta EXITOSA.
+2026-06-09 18:21:46,178 - INFO - Ingiriendo tabla: locations
+2026-06-09 18:21:46,201 - INFO - [locations] Ingesta EXITOSA.
+2026-06-09 18:21:46,202 - INFO - Ingiriendo tabla: sales
+2026-06-09 18:21:46,226 - INFO - [sales] Ingesta EXITOSA.
+2026-06-09 18:21:46,226 - INFO - Ingiriendo tabla: inventory
+2026-06-09 18:21:46,240 - INFO - [inventory] Ingesta EXITOSA.
+2026-06-09 18:21:46,240 - INFO - Finalización exitosa de la capa Bronze.
+2026-06-09 18:21:46,240 - INFO - Iniciando Transformación Bronze -> Silver...
+2026-06-09 18:21:46,240 - INFO - Procesando tabla base: brands
+2026-06-09 18:21:46,291 - INFO - Tabla 'brands' persistida en Silver exitosamente.
+2026-06-09 18:21:46,291 - INFO - Procesando tabla base: perfumes
+2026-06-09 18:21:46,327 - INFO - Tabla 'perfumes' persistida en Silver exitosamente.
+2026-06-09 18:21:46,328 - INFO - Procesando tabla base: customers
+2026-06-09 18:21:46,361 - INFO - Tabla 'customers' persistida en Silver exitosamente.
+2026-06-09 18:21:46,362 - INFO - Procesando tabla base: locations
+2026-06-09 18:21:46,394 - INFO - Tabla 'locations' persistida en Silver exitosamente.
+2026-06-09 18:21:46,394 - INFO - Procesando tabla base: sales
+2026-06-09 18:21:46,431 - INFO - Tabla 'sales' persistida en Silver exitosamente.
+2026-06-09 18:21:46,431 - INFO - Procesando tabla base: inventory
+2026-06-09 18:21:46,440 - WARNING - [inventory] Reglas de Negocio: Se descartaron 1 filas por inconsistencias.
+2026-06-09 18:21:46,450 - INFO - Tabla 'inventory' persistida en Silver exitosamente.
+2026-06-09 18:21:46,450 - INFO - Generando tablas enriquecidas (Joins)...
+2026-06-09 18:21:46,466 - INFO - Tabla 'perfumes_enriched' persistida en Silver exitosamente.
+2026-06-09 18:21:46,491 - INFO - Tabla 'sales_enriched' persistida en Silver exitosamente.
+2026-06-09 18:21:46,524 - INFO - Tabla 'customers_enriched' persistida en Silver exitosamente.
+2026-06-09 18:21:46,539 - INFO - Tabla 'inventory_enriched' persistida en Silver exitosamente.
+2026-06-09 18:21:46,539 - INFO - Finalización exitosa de la capa Silver.
+2026-06-09 18:21:46,540 - INFO - Iniciando Agregaciones Gold (Business Layer)...
+2026-06-09 18:21:46,550 - INFO - Calculando Revenue por Marca...
+2026-06-09 18:21:46,562 - INFO - Tabla Gold 'revenue_by_brand' generada exitosamente.
+2026-06-09 18:21:46,563 - INFO - Calculando Top Perfumes...
+2026-06-09 18:21:46,575 - INFO - Tabla Gold 'top_selling_perfumes' generada exitosamente.
+2026-06-09 18:21:46,575 - INFO - Calculando Revenue por Locación...
+2026-06-09 18:21:46,586 - INFO - Tabla Gold 'revenue_by_location' generada exitosamente.
+2026-06-09 18:21:46,587 - INFO - Finalización exitosa de la capa Gold.
+2026-06-09 18:21:46,587 - INFO - Iniciando Exportación de Capa Gold a PostgreSQL (Analytics)...
+2026-06-09 18:21:46,587 - INFO - Exportando tabla Gold: revenue_by_brand
+2026-06-09 18:21:46,655 - INFO - [revenue_by_brand] Exportación EXITOSA.
+2026-06-09 18:21:46,656 - INFO - Exportando tabla Gold: revenue_by_location
+2026-06-09 18:21:46,678 - INFO - [revenue_by_location] Exportación EXITOSA.
+2026-06-09 18:21:46,679 - INFO - Exportando tabla Gold: top_selling_perfumes
+2026-06-09 18:21:46,703 - INFO - [top_selling_perfumes] Exportación EXITOSA.
+2026-06-09 18:21:46,703 - INFO - Finalización exitosa de la exportación a Analytics.
+2026-06-09 18:21:46,703 - INFO - >>> Ejecución de la Pipeline: EXITOSA
+2026-06-09 18:29:03,596 - INFO - >>> Iniciando Ejecución de la Pipeline Completa...
+2026-06-09 18:29:03,596 - INFO - Iniciando Ingesta Bronze desde PostgreSQL...
+2026-06-09 18:29:03,644 - INFO - Ingiriendo tabla: brands
+2026-06-09 18:29:03,687 - INFO - [brands] Ingesta EXITOSA.
+2026-06-09 18:29:03,687 - INFO - Ingiriendo tabla: perfumes
+2026-06-09 18:29:03,715 - INFO - [perfumes] Ingesta EXITOSA.
+2026-06-09 18:29:03,715 - INFO - Ingiriendo tabla: customers
+2026-06-09 18:29:03,741 - INFO - [customers] Ingesta EXITOSA.
+2026-06-09 18:29:03,742 - INFO - Ingiriendo tabla: locations
+2026-06-09 18:29:03,765 - INFO - [locations] Ingesta EXITOSA.
+2026-06-09 18:29:03,765 - INFO - Ingiriendo tabla: sales
+2026-06-09 18:29:03,790 - INFO - [sales] Ingesta EXITOSA.
+2026-06-09 18:29:03,790 - INFO - Ingiriendo tabla: inventory
+2026-06-09 18:29:03,806 - INFO - [inventory] Ingesta EXITOSA.
+2026-06-09 18:29:03,806 - INFO - Finalización exitosa de la capa Bronze.
+2026-06-09 18:29:03,806 - INFO - Iniciando Transformación Bronze -> Silver...
+2026-06-09 18:29:03,806 - INFO - Procesando tabla base: brands
+2026-06-09 18:29:03,858 - INFO - Tabla 'brands' persistida en Silver exitosamente.
+2026-06-09 18:29:03,859 - INFO - Procesando tabla base: perfumes
+2026-06-09 18:29:03,894 - INFO - Tabla 'perfumes' persistida en Silver exitosamente.
+2026-06-09 18:29:03,894 - INFO - Procesando tabla base: customers
+2026-06-09 18:29:03,929 - INFO - Tabla 'customers' persistida en Silver exitosamente.
+2026-06-09 18:29:03,929 - INFO - Procesando tabla base: locations
+2026-06-09 18:29:03,979 - INFO - Tabla 'locations' persistida en Silver exitosamente.
+2026-06-09 18:29:03,979 - INFO - Procesando tabla base: sales
+2026-06-09 18:29:04,021 - INFO - Tabla 'sales' persistida en Silver exitosamente.
+2026-06-09 18:29:04,021 - INFO - Procesando tabla base: inventory
+2026-06-09 18:29:04,031 - WARNING - [inventory] Reglas de Negocio: Se descartaron 1 filas por inconsistencias.
+2026-06-09 18:29:04,042 - INFO - Tabla 'inventory' persistida en Silver exitosamente.
+2026-06-09 18:29:04,043 - INFO - Generando tablas enriquecidas (Joins)...
+2026-06-09 18:29:04,062 - INFO - Tabla 'perfumes_enriched' persistida en Silver exitosamente.
+2026-06-09 18:29:04,088 - INFO - Tabla 'sales_enriched' persistida en Silver exitosamente.
+2026-06-09 18:29:04,104 - INFO - Tabla 'customers_enriched' persistida en Silver exitosamente.
+2026-06-09 18:29:04,119 - INFO - Tabla 'inventory_enriched' persistida en Silver exitosamente.
+2026-06-09 18:29:04,120 - INFO - Finalización exitosa de la capa Silver.
+2026-06-09 18:29:04,120 - INFO - Iniciando Agregaciones Gold (Business Layer)...
+2026-06-09 18:29:04,133 - INFO - Calculando Revenue por Marca...
+2026-06-09 18:29:04,148 - INFO - Tabla Gold 'revenue_by_brand' generada exitosamente.
+2026-06-09 18:29:04,148 - INFO - Calculando Top Perfumes...
+2026-06-09 18:29:04,160 - INFO - Tabla Gold 'top_selling_perfumes' generada exitosamente.
+2026-06-09 18:29:04,160 - INFO - Calculando Revenue por Locación...
+2026-06-09 18:29:04,178 - INFO - Tabla Gold 'revenue_by_location' generada exitosamente.
+2026-06-09 18:29:04,178 - INFO - Finalización exitosa de la capa Gold.
+2026-06-09 18:29:04,178 - INFO - Iniciando Exportación de Capa Gold a PostgreSQL (Analytics)...
+2026-06-09 18:29:04,178 - INFO - Exportando tabla Gold: revenue_by_brand
+2026-06-09 18:29:04,246 - INFO - [revenue_by_brand] Exportación EXITOSA.
+2026-06-09 18:29:04,246 - INFO - Exportando tabla Gold: revenue_by_location
+2026-06-09 18:29:04,271 - INFO - [revenue_by_location] Exportación EXITOSA.
+2026-06-09 18:29:04,271 - INFO - Exportando tabla Gold: top_selling_perfumes
+2026-06-09 18:29:04,295 - INFO - [top_selling_perfumes] Exportación EXITOSA.
+2026-06-09 18:29:04,295 - INFO - Finalización exitosa de la exportación a Analytics.
+2026-06-09 18:29:04,296 - INFO - >>> Ejecución de la Pipeline: EXITOSA
+2026-06-09 18:31:30,408 - INFO - Iniciando Exportación de Capa Gold a PostgreSQL (Analytics)...
+2026-06-09 18:31:30,456 - INFO - Exportando tabla Gold: revenue_by_brand
+2026-06-09 18:31:30,552 - INFO - [revenue_by_brand] Exportación EXITOSA.
+2026-06-09 18:31:30,552 - INFO - Exportando tabla Gold: revenue_by_location
+2026-06-09 18:31:30,579 - INFO - [revenue_by_location] Exportación EXITOSA.
+2026-06-09 18:31:30,579 - INFO - Exportando tabla Gold: top_selling_perfumes
+2026-06-09 18:31:30,604 - INFO - [top_selling_perfumes] Exportación EXITOSA.
+2026-06-09 18:31:30,604 - INFO - Finalización exitosa de la exportación a Analytics.
+2026-06-09 18:33:44,586 - WARNING - Tabla 'perfumes-enriched' no encontrada en las capas Silver o Gold.
+2026-06-09 18:39:06,350 - INFO - >>> Starting Full Pipeline Execution...
+2026-06-09 18:39:06,350 - INFO - Iniciando Ingesta Bronze desde PostgreSQL...
+2026-06-09 18:39:06,396 - INFO - Ingiriendo tabla: brands
+2026-06-09 18:39:06,442 - INFO - [brands] Ingesta EXITOSA.
+2026-06-09 18:39:06,442 - INFO - Ingiriendo tabla: perfumes
+2026-06-09 18:39:06,471 - INFO - [perfumes] Ingesta EXITOSA.
+2026-06-09 18:39:06,472 - INFO - Ingiriendo tabla: customers
+2026-06-09 18:39:06,499 - INFO - [customers] Ingesta EXITOSA.
+2026-06-09 18:39:06,499 - INFO - Ingiriendo tabla: locations
+2026-06-09 18:39:06,521 - INFO - [locations] Ingesta EXITOSA.
+2026-06-09 18:39:06,521 - INFO - Ingiriendo tabla: sales
+2026-06-09 18:39:06,548 - INFO - [sales] Ingesta EXITOSA.
+2026-06-09 18:39:06,548 - INFO - Ingiriendo tabla: inventory
+2026-06-09 18:39:06,567 - INFO - [inventory] Ingesta EXITOSA.
+2026-06-09 18:39:06,567 - INFO - Finalización exitosa de la capa Bronze.
+2026-06-09 18:39:06,567 - INFO - Starting Bronze -> Silver Transformation...
+2026-06-09 18:39:06,567 - INFO - Processing base table: brands
+2026-06-09 18:39:06,619 - INFO - Table 'brands' successfully persisted in Silver.
+2026-06-09 18:39:06,619 - INFO - Processing base table: perfumes
+2026-06-09 18:39:06,656 - INFO - Table 'perfumes' successfully persisted in Silver.
+2026-06-09 18:39:06,656 - INFO - Processing base table: customers
+2026-06-09 18:39:06,693 - INFO - Table 'customers' successfully persisted in Silver.
+2026-06-09 18:39:06,693 - INFO - Processing base table: locations
+2026-06-09 18:39:06,731 - INFO - Table 'locations' successfully persisted in Silver.
+2026-06-09 18:39:06,731 - INFO - Processing base table: sales
+2026-06-09 18:39:06,765 - INFO - Table 'sales' successfully persisted in Silver.
+2026-06-09 18:39:06,766 - INFO - Processing base table: inventory
+2026-06-09 18:39:06,774 - WARNING - [inventory] Business Rules: Discarded 1 rows due to inconsistencies.
+2026-06-09 18:39:06,788 - INFO - Table 'inventory' successfully persisted in Silver.
+2026-06-09 18:39:06,788 - INFO - Generating enriched tables (Joins)...
+2026-06-09 18:39:06,809 - INFO - Table 'perfumes_enriched' successfully persisted in Silver.
+2026-06-09 18:39:06,838 - INFO - Table 'sales_enriched' successfully persisted in Silver.
+2026-06-09 18:39:06,855 - INFO - Table 'customers_enriched' successfully persisted in Silver.
+2026-06-09 18:39:06,872 - INFO - Table 'inventory_enriched' successfully persisted in Silver.
+2026-06-09 18:39:06,872 - INFO - Silver layer completion successful.
+2026-06-09 18:39:06,872 - INFO - Starting Gold Aggregations (Business Layer)...
+2026-06-09 18:39:06,884 - INFO - Calculating Revenue by Brand...
+2026-06-09 18:39:06,901 - INFO - Gold table 'revenue_by_brand' successfully generated.
+2026-06-09 18:39:06,901 - INFO - Calculating Top Selling Perfumes...
+2026-06-09 18:39:06,916 - INFO - Gold table 'top_selling_perfumes' successfully generated.
+2026-06-09 18:39:06,916 - INFO - Calculating Revenue by Location...
+2026-06-09 18:39:06,930 - INFO - Gold table 'revenue_by_location' successfully generated.
+2026-06-09 18:39:06,930 - INFO - Gold layer completion successful.
+2026-06-09 18:39:06,931 - INFO - Iniciando Exportación de Capa Gold a PostgreSQL (Analytics)...
+2026-06-09 18:39:06,931 - INFO - Exportando tabla Gold: revenue_by_brand
+2026-06-09 18:39:06,996 - INFO - [revenue_by_brand] Exportación EXITOSA.
+2026-06-09 18:39:06,996 - INFO - Exportando tabla Gold: revenue_by_location
+2026-06-09 18:39:07,023 - INFO - [revenue_by_location] Exportación EXITOSA.
+2026-06-09 18:39:07,023 - INFO - Exportando tabla Gold: top_selling_perfumes
+2026-06-09 18:39:07,049 - INFO - [top_selling_perfumes] Exportación EXITOSA.
+2026-06-09 18:39:07,049 - INFO - Finalización exitosa de la exportación a Analytics.
+2026-06-09 18:39:07,049 - INFO - >>> Pipeline Execution: SUCCESSFUL
+2026-06-09 18:45:36,711 - INFO - >>> Starting Full Pipeline Execution...
+2026-06-09 18:45:36,711 - INFO - Iniciando Ingesta Bronze desde PostgreSQL...
+2026-06-09 18:45:36,756 - INFO - Connected to database: perfumery_db
+2026-06-09 18:45:36,756 - INFO - Ingiriendo tabla: brands
+2026-06-09 18:45:36,804 - INFO - [brands] Ingesta EXITOSA.
+2026-06-09 18:45:36,804 - INFO - Ingiriendo tabla: perfumes
+2026-06-09 18:45:36,831 - INFO - [perfumes] Ingesta EXITOSA.
+2026-06-09 18:45:36,831 - INFO - Ingiriendo tabla: customers
+2026-06-09 18:45:36,856 - INFO - [customers] Ingesta EXITOSA.
+2026-06-09 18:45:36,856 - INFO - Ingiriendo tabla: locations
+2026-06-09 18:45:36,880 - INFO - [locations] Ingesta EXITOSA.
+2026-06-09 18:45:36,881 - INFO - Ingiriendo tabla: sales
+2026-06-09 18:45:36,903 - INFO - [sales] Ingesta EXITOSA.
+2026-06-09 18:45:36,903 - INFO - Ingiriendo tabla: inventory
+2026-06-09 18:45:36,918 - INFO - [inventory] Ingesta EXITOSA.
+2026-06-09 18:45:36,918 - INFO - Finalización exitosa de la capa Bronze.
+2026-06-09 18:45:36,918 - INFO - Starting Bronze -> Silver Transformation...
+2026-06-09 18:45:36,918 - INFO - Processing base table: brands
+2026-06-09 18:45:36,970 - INFO - Table 'brands' successfully persisted in Silver.
+2026-06-09 18:45:36,970 - INFO - Processing base table: perfumes
+2026-06-09 18:45:37,011 - INFO - Table 'perfumes' successfully persisted in Silver.
+2026-06-09 18:45:37,011 - INFO - Processing base table: customers
+2026-06-09 18:45:37,045 - INFO - Table 'customers' successfully persisted in Silver.
+2026-06-09 18:45:37,045 - INFO - Processing base table: locations
+2026-06-09 18:45:37,078 - INFO - Table 'locations' successfully persisted in Silver.
+2026-06-09 18:45:37,078 - INFO - Processing base table: sales
+2026-06-09 18:45:37,113 - INFO - Table 'sales' successfully persisted in Silver.
+2026-06-09 18:45:37,113 - INFO - Processing base table: inventory
+2026-06-09 18:45:37,122 - WARNING - [inventory] Business Rules: Discarded 1 rows due to inconsistencies.
+2026-06-09 18:45:37,134 - INFO - Table 'inventory' successfully persisted in Silver.
+2026-06-09 18:45:37,134 - INFO - Generating enriched tables (Joins)...
+2026-06-09 18:45:37,153 - INFO - Table 'perfumes_enriched' successfully persisted in Silver.
+2026-06-09 18:45:37,178 - INFO - Table 'sales_enriched' successfully persisted in Silver.
+2026-06-09 18:45:37,196 - INFO - Table 'customers_enriched' successfully persisted in Silver.
+2026-06-09 18:45:37,210 - INFO - Table 'inventory_enriched' successfully persisted in Silver.
+2026-06-09 18:45:37,211 - INFO - Silver layer completion successful.
+2026-06-09 18:45:37,211 - INFO - Starting Gold Aggregations (Business Layer)...
+2026-06-09 18:45:37,225 - INFO - Calculating Revenue by Brand...
+2026-06-09 18:45:37,240 - INFO - Gold table 'revenue_by_brand' successfully generated.
+2026-06-09 18:45:37,240 - INFO - Calculating Top Selling Perfumes...
+2026-06-09 18:45:37,254 - INFO - Gold table 'top_selling_perfumes' successfully generated.
+2026-06-09 18:45:37,254 - INFO - Calculating Revenue by Location...
+2026-06-09 18:45:37,272 - INFO - Gold table 'revenue_by_location' successfully generated.
+2026-06-09 18:45:37,272 - INFO - Gold layer completion successful.
+2026-06-09 18:45:37,272 - INFO - Iniciando Exportación de Capa Gold a PostgreSQL (Analytics)...
+2026-06-09 18:45:37,272 - INFO - Exportando tabla Gold: revenue_by_brand
+2026-06-09 18:45:37,350 - INFO - [revenue_by_brand] Exportación EXITOSA.
+2026-06-09 18:45:37,350 - INFO - Exportando tabla Gold: revenue_by_location
+2026-06-09 18:45:37,377 - INFO - [revenue_by_location] Exportación EXITOSA.
+2026-06-09 18:45:37,377 - INFO - Exportando tabla Gold: top_selling_perfumes
+2026-06-09 18:45:37,403 - INFO - [top_selling_perfumes] Exportación EXITOSA.
+2026-06-09 18:45:37,403 - INFO - Finalización exitosa de la exportación a Analytics.
+2026-06-09 18:45:37,403 - INFO - >>> Pipeline Execution: SUCCESSFUL
+2026-06-09 19:01:21,046 - INFO - >>> Starting Full Pipeline Execution...
+2026-06-09 19:01:21,046 - INFO - Iniciando Ingesta Bronze desde PostgreSQL...
+2026-06-09 19:01:21,091 - INFO - Connected to database: perfumery_db
+2026-06-09 19:01:21,092 - INFO - Ingiriendo tabla: brands
+2026-06-09 19:01:21,136 - INFO - [brands] Ingesta EXITOSA.
+2026-06-09 19:01:21,137 - INFO - Ingiriendo tabla: perfumes
+2026-06-09 19:01:21,158 - INFO - [perfumes] Ingesta EXITOSA.
+2026-06-09 19:01:21,158 - INFO - Ingiriendo tabla: customers
+2026-06-09 19:01:21,182 - INFO - [customers] Ingesta EXITOSA.
+2026-06-09 19:01:21,182 - INFO - Ingiriendo tabla: locations
+2026-06-09 19:01:21,204 - INFO - [locations] Ingesta EXITOSA.
+2026-06-09 19:01:21,204 - INFO - Ingiriendo tabla: sales
+2026-06-09 19:01:21,225 - INFO - [sales] Ingesta EXITOSA.
+2026-06-09 19:01:21,225 - INFO - Ingiriendo tabla: inventory
+2026-06-09 19:01:21,240 - INFO - [inventory] Ingesta EXITOSA.
+2026-06-09 19:01:21,241 - INFO - Finalización exitosa de la capa Bronze.
+2026-06-09 19:01:21,241 - INFO - Starting Bronze -> Silver Transformation...
+2026-06-09 19:01:21,241 - INFO - Processing base table: brands
+2026-06-09 19:01:21,293 - INFO - Table 'brands' successfully persisted in Silver.
+2026-06-09 19:01:21,293 - INFO - Processing base table: perfumes
+2026-06-09 19:01:21,332 - INFO - Table 'perfumes' successfully persisted in Silver.
+2026-06-09 19:01:21,332 - INFO - Processing base table: customers
+2026-06-09 19:01:21,383 - INFO - Table 'customers' successfully persisted in Silver.
+2026-06-09 19:01:21,383 - INFO - Processing base table: locations
+2026-06-09 19:01:21,426 - INFO - Table 'locations' successfully persisted in Silver.
+2026-06-09 19:01:21,426 - INFO - Processing base table: sales
+2026-06-09 19:01:21,467 - INFO - Table 'sales' successfully persisted in Silver.
+2026-06-09 19:01:21,467 - INFO - Processing base table: inventory
+2026-06-09 19:01:21,480 - WARNING - [inventory] Business Rules: Discarded 1 rows due to inconsistencies.
+2026-06-09 19:01:21,494 - INFO - Table 'inventory' successfully persisted in Silver.
+2026-06-09 19:01:21,494 - INFO - Generating enriched tables (Joins)...
+2026-06-09 19:01:21,517 - INFO - Table 'perfumes_enriched' successfully persisted in Silver.
+2026-06-09 19:01:21,544 - INFO - Table 'sales_enriched' successfully persisted in Silver.
+2026-06-09 19:01:21,563 - INFO - Table 'customers_enriched' successfully persisted in Silver.
+2026-06-09 19:01:21,581 - INFO - Table 'inventory_enriched' successfully persisted in Silver.
+2026-06-09 19:01:21,581 - INFO - Silver layer completion successful.
+2026-06-09 19:01:21,581 - INFO - Starting Gold Aggregations (Business Layer)...
+2026-06-09 19:01:21,592 - INFO - Calculating Revenue by Brand...
+2026-06-09 19:01:21,609 - INFO - Gold table 'revenue_by_brand' successfully generated.
+2026-06-09 19:01:21,610 - INFO - Calculating Top Selling Perfumes...
+2026-06-09 19:01:21,627 - INFO - Gold table 'top_selling_perfumes' successfully generated.
+2026-06-09 19:01:21,627 - INFO - Calculating Revenue by Location...
+2026-06-09 19:01:21,643 - INFO - Gold table 'revenue_by_location' successfully generated.
+2026-06-09 19:01:21,644 - INFO - Gold layer completion successful.
+2026-06-09 19:01:21,644 - INFO - Iniciando Exportación de Capa Gold a PostgreSQL (Analytics)...
+2026-06-09 19:01:21,644 - INFO - Exportando tabla Gold: revenue_by_brand
+2026-06-09 19:01:21,710 - INFO - [revenue_by_brand] Exportación EXITOSA.
+2026-06-09 19:01:21,710 - INFO - Exportando tabla Gold: revenue_by_location
+2026-06-09 19:01:21,736 - INFO - [revenue_by_location] Exportación EXITOSA.
+2026-06-09 19:01:21,736 - INFO - Exportando tabla Gold: top_selling_perfumes
+2026-06-09 19:01:21,764 - INFO - [top_selling_perfumes] Exportación EXITOSA.
+2026-06-09 19:01:21,764 - INFO - Finalización exitosa de la exportación a Analytics.
+2026-06-09 19:01:21,764 - INFO - >>> Pipeline Execution: SUCCESSFUL

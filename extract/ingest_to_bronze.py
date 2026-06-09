@@ -8,19 +8,23 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from sql.connection import db_manager
-from src.config import BRONZE_PATH, RAW_SCHEMA, TABLES
+from src.config import BRONZE_PATH, RAW_SCHEMA, TABLES, logger
 
 def ingest_to_bronze():
     """
     Ingests tables from PostgreSQL 'raw' schema into Delta Lake Bronze layer.
+    
+    TODO: Implement incremental loading using MERGE (upsert) logic instead of full overwrite.
+    This would require tracking the last 'processed_at' or a 'modified_at' timestamp 
+    from the source database to reduce I/O and processing time.
     """
-    print(f"--- Starting Bronze Ingestion ---")
+    logger.info("Iniciando Ingesta Bronze desde PostgreSQL...")
     
     # Get engine from our connection manager
     try:
         engine = db_manager.get_engine()
     except Exception as e:
-        print(f"Failed to connect to PostgreSQL. Error: {e}")
+        logger.error(f"Falla crítica: No se pudo conectar a PostgreSQL. Error: {e}")
         return
 
     # Ensure base bronze directory exists
@@ -29,6 +33,7 @@ def ingest_to_bronze():
 
     for table_name in TABLES:
         try:
+            logger.info(f"Ingiriendo tabla: {table_name}")
             # Read data from Postgres
             query = f"SELECT * FROM {RAW_SCHEMA}.{table_name}"
             df = pd.read_sql(query, engine)
@@ -41,11 +46,12 @@ def ingest_to_bronze():
             
             # Write to Delta Lake (overwrite mode as per design)
             write_deltalake(output_path, df, mode='overwrite')
+            logger.info(f"[{table_name}] Ingesta EXITOSA.")
             
         except Exception as e:
-            print(f"[{table_name}] Error during ingestion: {e}")
+            logger.error(f"[{table_name}] Error durante la ingesta: {e}")
 
-    print(f"Bronze Ingestion: OK")
+    logger.info("Finalización exitosa de la capa Bronze.")
 
 if __name__ == "__main__":
     ingest_to_bronze()

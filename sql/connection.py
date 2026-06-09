@@ -1,7 +1,12 @@
 import os
+import sys
 from sqlalchemy import create_engine
 from sqlalchemy.exc import SQLAlchemyError
 from dotenv import load_dotenv
+
+# Path configuration for internal imports
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from src.config import logger
 
 # Load environment variables from .env file
 load_dotenv()
@@ -30,9 +35,9 @@ class DBConnection:
                 # Test the connection
                 with self._engine.connect() as conn:
                     pass
-                print(f"Connected to database: {self.database}")
+                logger.info(f"Connected to database: {self.database}")
             except SQLAlchemyError as e:
-                print(f"Error connecting to the database: {e}")
+                logger.error(f"Error connecting to the database: {e}")
                 raise e
         return self._engine
 

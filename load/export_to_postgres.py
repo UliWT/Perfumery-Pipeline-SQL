@@ -7,26 +7,25 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from sql.connection import db_manager
-from src.config import GOLD_PATH, ANALYTICS_SCHEMA
+from src.config import GOLD_PATH, ANALYTICS_SCHEMA, logger
 
 def export_gold_to_postgres():
     """
     Reads all Gold tables from Delta Lake and exports them to the PostgreSQL 'analytics' schema.
     """
-    print("--- Starting Gold Export to Postgres ---")
+    logger.info("Iniciando Exportación de Capa Gold a PostgreSQL (Analytics)...")
     
     try:
         engine = db_manager.get_engine()
     except Exception as e:
-        print(f"Failed to connect to PostgreSQL. Error: {e}")
+        logger.error(f"Falla crítica: No se pudo conectar a PostgreSQL. Error: {e}")
         return
     
-    # Identify Gold tables to export
     if not os.path.exists(GOLD_PATH):
-        print(f"Gold path {GOLD_PATH} does not exist. Run aggregation first.")
+        logger.error(f"La ruta de Gold '{GOLD_PATH}' no existe. Ejecutá las agregaciones primero.")
         return
 
-    # Filter directories that look like Delta tables (contain _delta_log)
+    # Filtrar directorios que parecen ser tablas Delta
     gold_tables = []
     for d in os.listdir(GOLD_PATH):
         table_path = os.path.join(GOLD_PATH, d)
@@ -34,16 +33,21 @@ def export_gold_to_postgres():
             gold_tables.append(d)
     
     if not gold_tables:
-        print("No Gold tables found to export.")
+        logger.warning("No se encontraron tablas Gold para exportar.")
         return
 
     for table_name in gold_tables:
         try:
+            logger.info(f"Exportando tabla Gold: {table_name}")
             path = os.path.join(GOLD_PATH, table_name)
             dt = DeltaTable(path)
             df = dt.to_pandas()
             
-            # Using 'replace' to ensure schema updates if changed, though 'append' could be used for history
+            # Limpieza de columnas técnicas de pandas/delta (como __index_level_0__)
+            if '__index_level_0__' in df.columns:
+                df = df.drop(columns=['__index_level_0__'])
+            
+            # Exportación a Postgres
             df.to_sql(
                 name=table_name,
                 con=engine,
@@ -51,11 +55,12 @@ def export_gold_to_postgres():
                 if_exists='replace',
                 index=False
             )
+            logger.info(f"[{table_name}] Exportación EXITOSA.")
             
         except Exception as e:
-            print(f"[{table_name}] Error during export: {e}")
+            logger.error(f"[{table_name}] Error durante la exportación: {e}")
 
-    print("Gold Export: OK")
+    logger.info("Finalización exitosa de la exportación a Analytics.")
 
 if __name__ == "__main__":
     export_gold_to_postgres()
