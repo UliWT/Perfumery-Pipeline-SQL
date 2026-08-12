@@ -61,7 +61,7 @@ INSERT INTO raw.locations (name, state) VALUES
 ('United States', 'Florida');
 
 -- Customers
-INSERT INTO raw.customers (first_name, last_name, email, location_id) VALUES
+INSERT INTO raw.customers (first_name, last_name, email, location) VALUES
 ('John', 'Smith', 'johnsmith2598@gmail.com', 1),
 ('Mac', 'Callahan', 'maccallahan1997@gmail.com', 2),
 ('Albert', 'Roy', 'royalbert12@gmail.com', 3),

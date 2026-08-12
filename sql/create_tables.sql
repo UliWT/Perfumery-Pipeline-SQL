@@ -25,7 +25,7 @@ CREATE TABLE raw.customers (
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     email VARCHAR(150) UNIQUE, 
-    location_id int REFERENCES raw.locations(id)
+    location int REFERENCES raw.locations(id)
 );
 
 CREATE TABLE raw.sales (

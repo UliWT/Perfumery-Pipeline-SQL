@@ -1,0 +1,11 @@
+.env
+.atl/
+venvp/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+logs/*.log
+data/
+.DS_Store
+
